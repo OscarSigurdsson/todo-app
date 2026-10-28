@@ -14,10 +14,24 @@ function renderTasks() {
     tasks.forEach((task, index) => {
         const li = document.createElement('li');
         li.className = 'task-item';
-        li.innerHTML = `
-            <span class="task-text">${task.text}</span>
-            <button class="delete-btn" data-index="${index}">Delete</button>
-        `;
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'task-check';
+        checkbox.checked = Boolean(task.done);
+        checkbox.dataset.index = index;
+        checkbox.setAttribute('aria-label', task.text);
+
+        const text = document.createElement('span');
+        text.className = 'task-text';
+        text.textContent = task.text;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.dataset.index = index;
+        deleteBtn.textContent = 'Delete';
+
+        li.append(checkbox, text, deleteBtn);
         list.appendChild(li);
     });
 }
@@ -38,6 +52,14 @@ list.addEventListener('click', (e) => {
         const index = parseInt(e.target.dataset.index, 10);
         tasks.splice(index, 1);
         saveTasks();
+        renderTasks();
+    }
+});
+
+list.addEventListener('change', (e) => {
+    if (e.target.classList.contains('task-check')) {
+        const index = parseInt(e.target.dataset.index, 10);
+        tasks[index].done = e.target.checked;
         renderTasks();
     }
 });
